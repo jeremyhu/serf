@@ -239,7 +239,7 @@ apps_ssl_info_callback(const SSL *s, int where, int ret)
 
 static void bio_set_data(BIO *bio, void *data)
 {
-#ifdef USE_OPENSSL_1_1_API
+#if defined(USE_OPENSSL_1_1_API) && !defined(LIBRESSL_VERSION_NUMBER)
     BIO_set_data(bio, data);
 #else
     bio->ptr = data;
@@ -248,7 +248,7 @@ static void bio_set_data(BIO *bio, void *data)
 
 static void *bio_get_data(BIO *bio)
 {
-#ifdef USE_OPENSSL_1_1_API
+#if defined(USE_OPENSSL_1_1_API) && !defined(LIBRESSL_VERSION_NUMBER)
     return BIO_get_data(bio);
 #else
     return bio->ptr;
@@ -381,7 +381,7 @@ static int bio_file_gets(BIO *bio, char *in, int inlen)
 
 static int bio_bucket_create(BIO *bio)
 {
-#ifdef USE_OPENSSL_1_1_API
+#if defined(USE_OPENSSL_1_1_API) && !defined(LIBRESSL_VERSION_NUMBER)
     BIO_set_shutdown(bio, 1);
     BIO_set_init(bio, 1);
     BIO_set_data(bio, NULL);
@@ -424,7 +424,7 @@ static long bio_bucket_ctrl(BIO *bio, int cmd, long num, void *ptr)
     return ret;
 }
 
-#ifndef USE_OPENSSL_1_1_API
+#if !(defined(USE_OPENSSL_1_1_API) && !defined(LIBRESSL_VERSION_NUMBER))
 static BIO_METHOD bio_bucket_method = {
     BIO_TYPE_MEM,
     "Serf SSL encryption and decryption buckets",
@@ -460,7 +460,7 @@ static BIO_METHOD *bio_meth_bucket_new(void)
 {
     BIO_METHOD *biom = NULL;
 
-#ifdef USE_OPENSSL_1_1_API
+#if defined(USE_OPENSSL_1_1_API) && !defined(LIBRESSL_VERSION_NUMBER)
     biom = BIO_meth_new(BIO_TYPE_MEM,
                         "Serf SSL encryption and decryption buckets");
     if (biom) {
@@ -481,7 +481,7 @@ static BIO_METHOD *bio_meth_file_new(void)
 {
     BIO_METHOD *biom = NULL;
 
-#ifdef USE_OPENSSL_1_1_API
+#if defined(USE_OPENSSL_1_1_API) && !defined(LIBRESSL_VERSION_NUMBER)
     biom = BIO_meth_new(BIO_TYPE_FILE,
                         "Wrapper around APR file structures");
     BIO_meth_set_write(biom, bio_file_write);
@@ -499,7 +499,7 @@ static BIO_METHOD *bio_meth_file_new(void)
 
 static void bio_meth_free(BIO_METHOD *biom)
 {
-#ifdef USE_OPENSSL_1_1_API
+#if defined(USE_OPENSSL_1_1_API) && !defined(LIBRESSL_VERSION_NUMBER)
     BIO_meth_free(biom);
 #endif
 }
@@ -1156,7 +1156,7 @@ static void init_ssl_libraries(void)
         }
 #endif
 
-#ifdef USE_OPENSSL_1_1_API
+#if defined(USE_OPENSSL_1_1_API) && !defined(LIBRESSL_VERSION_NUMBER)
         OPENSSL_malloc_init();
 #else
         CRYPTO_malloc_init();
